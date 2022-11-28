@@ -13,6 +13,8 @@ export const authOptions: NextAuthOptions = {
     session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
+        // @ts-ignore
+        session.user.access = user.access;
       }
       return session;
     },
