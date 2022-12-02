@@ -99,7 +99,7 @@ const NavBar: NextPage = () => {
           <Dropdown
             arrowIcon={false}
             inline={true}
-            label={<Button label="Login" />}
+            label={<Button>Login</Button>}
           >
             <Dropdown.Header>
               <span className="block text-sm">
