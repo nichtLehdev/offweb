@@ -104,10 +104,7 @@ const NavBar: NextPage = () => {
             <Dropdown.Item onClick={() => signIn("discord")}>
               Login with Discord
             </Dropdown.Item>
-            <Dropdown.Item
-              className="rounded-md bg-neutral-600 p-2"
-              onClick={() => signIn("github")}
-            >
+            <Dropdown.Item onClick={() => signIn("github")}>
               Login with Github
             </Dropdown.Item>
             {/*<Dropdown.Item>Dashboard</Dropdown.Item>
