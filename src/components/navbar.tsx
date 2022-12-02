@@ -1,10 +1,11 @@
 import { NextPage } from "next";
-import { signOut, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import React from "react";
 import logo from "../../public/logo.png";
 import Image from "next/image";
 import {
   Avatar,
+  Button,
   DarkThemeToggle,
   Dropdown,
   Flowbite,
@@ -78,7 +79,43 @@ const NavBar: NextPage = () => {
 
   return (
     <>
-      <div></div>
+      <Navbar fluid={true} rounded={true}>
+        <Navbar.Brand href="/">
+          <Image
+            src={logo}
+            className="mr-3 h-6 w-6 sm:h-9 sm:w-9"
+            alt="Offchat Logo"
+          />
+          <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
+            Offchat
+          </span>
+        </Navbar.Brand>
+        <div className="flex md:order-2">
+          <div className="mr-6">
+            <Flowbite>
+              <DarkThemeToggle />
+            </Flowbite>
+          </div>
+          <Dropdown
+            arrowIcon={false}
+            inline={true}
+            label={<Button>Login</Button>}
+          >
+            <Dropdown.Item onClick={() => signIn("discord")}>
+              Login with Discord
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => signIn("github")}>
+              Login with Github
+            </Dropdown.Item>
+            {/*<Dropdown.Item>Dashboard</Dropdown.Item>
+                <Dropdown.Item>Settings</Dropdown.Item>
+              <Dropdown.Item>Earnings</Dropdown.Item>
+                <Dropdown.Divider />*/}
+          </Dropdown>
+          <Navbar.Toggle />
+        </div>
+        <Navbar.Collapse>{PublicSites()}</Navbar.Collapse>
+      </Navbar>
     </>
   );
 };
