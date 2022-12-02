@@ -101,26 +101,14 @@ const NavBar: NextPage = () => {
             inline={true}
             label={<Button>Login</Button>}
           >
-            <Dropdown.Header>
-              <span className="block text-sm">
-                Login to access all functions
-              </span>
-            </Dropdown.Header>
-            <Dropdown.Item>
-              <button
-                className="rounded-md bg-neutral-600 p-2"
-                onClick={() => signIn("discord")}
-              >
-                Login with Discord
-              </button>
+            <Dropdown.Item onClick={() => signIn("discord")}>
+              Login with Discord
             </Dropdown.Item>
-            <Dropdown.Item>
-              <button
-                className="rounded-md bg-neutral-600 p-2"
-                onClick={() => signIn("github")}
-              >
-                Login with Github
-              </button>
+            <Dropdown.Item
+              className="rounded-md bg-neutral-600 p-2"
+              onClick={() => signIn("github")}
+            >
+              Login with Github
             </Dropdown.Item>
             {/*<Dropdown.Item>Dashboard</Dropdown.Item>
                 <Dropdown.Item>Settings</Dropdown.Item>
