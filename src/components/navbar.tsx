@@ -74,6 +74,60 @@ const NavBar: NextPage = () => {
           </Navbar>
         </>
       );
+    } else {
+      return (
+        <>
+          <Navbar fluid={true} rounded={true}>
+            <Navbar.Brand href="/">
+              <Image
+                src={logo}
+                className="mr-3 h-6 w-6 sm:h-9 sm:w-9"
+                alt="Offchat Logo"
+              />
+              <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
+                Offchat
+              </span>
+            </Navbar.Brand>
+            <div className="flex md:order-2">
+              <div className="mr-6">
+                <Flowbite>
+                  <DarkThemeToggle />
+                </Flowbite>
+              </div>
+              <Dropdown
+                arrowIcon={false}
+                inline={true}
+                label={
+                  <Avatar
+                    alt="User settings"
+                    img={
+                      session.user!.image ||
+                      "https://cdn-icons-png.flaticon.com/512/892/892781.png?w=1380&t=st=1669818115~exp=1669818715~hmac=4c0465a1bc19d7c352a786ce0c25f861f8fa42cf40072a22dec3f378921c03d2"
+                    }
+                    rounded={true}
+                  />
+                }
+              >
+                <Dropdown.Header>
+                  <span className="block text-sm">{session.user!.name}</span>
+                  <span className="block truncate text-sm font-medium">
+                    {session.user!.email}
+                  </span>
+                </Dropdown.Header>
+                {/*<Dropdown.Item>Dashboard</Dropdown.Item>
+                <Dropdown.Item>Settings</Dropdown.Item>
+              <Dropdown.Item>Earnings</Dropdown.Item>
+                <Dropdown.Divider />*/}
+                <Dropdown.Item onClick={() => signOut()}>
+                  Sign Out
+                </Dropdown.Item>
+              </Dropdown>
+              <Navbar.Toggle />
+            </div>
+            <Navbar.Collapse>{PublicSites()}</Navbar.Collapse>
+          </Navbar>
+        </>
+      );
     }
   }
 
