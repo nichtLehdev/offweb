@@ -6,7 +6,6 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import NavBar from "../components/navbar";
 
 import { trpc } from "../utils/trpc";
-import { Session } from "inspector";
 
 const Home: NextPage = () => {
   const { data: session, status } = useSession();
