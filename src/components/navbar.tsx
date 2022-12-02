@@ -67,8 +67,8 @@ const NavBar: NextPage = () => {
               <Navbar.Toggle />
             </div>
             <Navbar.Collapse>
-              {publicSites()}
-              {lockedSites()}
+              {PublicSites()}
+              {LockedSites()}
             </Navbar.Collapse>
           </Navbar>
         </>
@@ -83,7 +83,7 @@ const NavBar: NextPage = () => {
   );
 };
 
-const publicSites: () => JSX.Element[] = () => {
+const PublicSites: () => JSX.Element[] = () => {
   const router = useRouter();
   const sites = [
     {
@@ -123,7 +123,7 @@ const publicSites: () => JSX.Element[] = () => {
   return publicSites;
 };
 
-const lockedSites: () => JSX.Element[] = () => {
+const LockedSites: () => JSX.Element[] = () => {
   const router = useRouter();
   const sites = [
     {

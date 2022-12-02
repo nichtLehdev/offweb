@@ -13,7 +13,8 @@ export const authOptions: NextAuthOptions = {
     session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
-        // @ts-ignore
+        //ignore tslint for next line
+        // @ts-expect-error - Property 'access' does not exist on type 'User | AdapterUser'
         session.user.access = user.access;
       }
       return session;
