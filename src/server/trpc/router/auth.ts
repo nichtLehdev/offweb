@@ -4,7 +4,14 @@ export const authRouter = router({
   getSession: publicProcedure.query(({ ctx }) => {
     return ctx.session;
   }),
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
+  getAllChannels: protectedProcedure.query(async () => {
+    const response = await fetch(
+      process.env.MESSAGE_STORAGE_URL +
+        "/channels" +
+        "?auth=" +
+        process.env.MESSAGE_STORAGE_TOKEN
+    );
+    const channels = await response.json();
+    return channels;
   }),
 });
