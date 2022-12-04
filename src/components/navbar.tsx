@@ -11,10 +11,11 @@ import {
   Flowbite,
   Navbar,
 } from "flowbite-react";
-import { useRouter } from "next/router";
+import { NextRouter, useRouter } from "next/router";
 
 const NavBar: NextPage = () => {
   const { data: session, status } = useSession();
+  const router = useRouter();
 
   if (session) {
     return (
@@ -64,7 +65,9 @@ const NavBar: NextPage = () => {
             </Dropdown>
             <Navbar.Toggle />
           </div>
-          <Navbar.Collapse>{ShowSites(session.user!.access)}</Navbar.Collapse>
+          <Navbar.Collapse>
+            {ShowSites(session.user!.access, router)}
+          </Navbar.Collapse>
         </Navbar>
       </>
     );
@@ -111,27 +114,29 @@ const NavBar: NextPage = () => {
           </Dropdown>
           <Navbar.Toggle />
         </div>
-        <Navbar.Collapse>{PublicSites()}</Navbar.Collapse>
+        <Navbar.Collapse>{PublicSites(router)}</Navbar.Collapse>
       </Navbar>
     </>
   );
 };
 
-const ShowSites: (hasAccess: boolean) => JSX.Element = (hasAccess) => {
+const ShowSites: (hasAccess: boolean, router: NextRouter) => JSX.Element = (
+  hasAccess,
+  router
+) => {
   if (hasAccess) {
     return (
       <>
-        {PublicSites()}
-        {LockedSites()}
+        {PublicSites(router)}
+        {LockedSites(router)}
       </>
     );
   } else {
-    return <>{PublicSites()}</>;
+    return <>{PublicSites(router)}</>;
   }
 };
 
-const PublicSites: () => JSX.Element[] = () => {
-  const router = useRouter();
+const PublicSites: (router: NextRouter) => JSX.Element[] = (router) => {
   const sites = [
     {
       name: "Home",
@@ -170,8 +175,7 @@ const PublicSites: () => JSX.Element[] = () => {
   return publicSites;
 };
 
-const LockedSites: () => JSX.Element[] = () => {
-  const router = useRouter();
+const LockedSites: (router: NextRouter) => JSX.Element[] = (router) => {
   const sites = [
     {
       name: "Projects",
