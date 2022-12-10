@@ -13,5 +13,15 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  redirects: async () => {
+    return [
+      {
+        source: "/nyy0mc/livemap",
+        destination: "https://mc.offchat.de/nyy0mc/livemap",
+        permanent: true,
+      },
+    ];
+  },
 };
+
 export default config;

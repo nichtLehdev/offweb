@@ -9,6 +9,8 @@ declare module "next-auth" {
       id: string;
       access: boolean;
       theme: string;
+      favChannels: string;
+      favUsers: string;
     } & DefaultSession["user"];
   }
 }
