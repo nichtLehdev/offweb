@@ -6,6 +6,7 @@ export const authRouter = router({
     return ctx.session;
   }),
   getAllChannels: protectedProcedure
+    .input(z.object({ onlyCurrent: z.boolean() }))
     .output(z.array(z.object({})))
     .query(async () => {
       const response = await fetch(
