@@ -12,6 +12,7 @@ import {
   Navbar,
 } from "flowbite-react";
 import { useRouter } from "next/router";
+import DarkModeToggle from "./darkModeToggle";
 
 const NavBar: NextPage = () => {
   const { data: session, status } = useSession();
@@ -31,10 +32,8 @@ const NavBar: NextPage = () => {
             </span>
           </Navbar.Brand>
           <div className="flex md:order-2">
-            <div className="mr-6">
-              <Flowbite>
-                <DarkThemeToggle />
-              </Flowbite>
+            <div className="m-auto mr-6 align-middle">
+              <DarkModeToggle />
             </div>
             <Dropdown
               arrowIcon={false}
@@ -84,10 +83,8 @@ const NavBar: NextPage = () => {
           </span>
         </Navbar.Brand>
         <div className="flex md:order-2">
-          <div className="mr-6">
-            <Flowbite>
-              <DarkThemeToggle />
-            </Flowbite>
+          <div className="mr-6 align-middle">
+            <DarkModeToggle />
           </div>
           <Dropdown
             arrowIcon={false}
