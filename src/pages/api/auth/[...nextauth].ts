@@ -12,7 +12,14 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     session({ session, user }) {
       if (session.user) {
+        session.user.image = user.image;
         session.user.id = user.id;
+        // @ts-expect-error - Property 'access' does not exist on type 'User | AdapterUser'
+        session.user.access = user.access;
+        // @ts-expect-error - Property 'favChannels' does not exist on type 'User | AdapterUser'
+        session.user.favChannels = user.favChannels;
+        // @ts-expect-error - Property 'favUsers' does not exist on type 'User | AdapterUser'
+        session.user.favUsers = user.favUsers;
       }
       return session;
     },
