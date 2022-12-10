@@ -11,7 +11,7 @@ const UserPage: NextPage = () => {
   const { query, isReady } = useRouter();
   const limit = 100;
   const { userId } = query;
-  var page = Number(query.page) || 0;
+  let page = Number(query.page) || 0;
   if (page < 0) page = 0;
 
   const msgCountQuery = trpc.auth.getUserMsgCount.useQuery({
@@ -46,7 +46,7 @@ const UserPage: NextPage = () => {
       </>
     );
   }
-  var msgCount = msgCountQuery.data.count;
+  const msgCount = msgCountQuery.data.count;
 
   if (page > Math.floor(msgCount / limit)) {
     page = Math.floor(msgCount / limit);
@@ -72,7 +72,7 @@ const UserPage: NextPage = () => {
       </>
     );
   }
-  var logs = msgQuery.data as Message[];
+  const logs = msgQuery.data as Message[];
   const userName = logs[0]!.userName;
 
   return (
