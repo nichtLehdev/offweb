@@ -48,15 +48,18 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String           @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?          @unique
   emailVerified DateTime?
-  image         String?
+  image         String? 
   accounts      Account[]
   sessions      Session[]
-  access        Boolean   @default(false)
-  theme         String    @default("dark")
+  access        Boolean          @default(false)
+  theme         String           @default("dark")
+  createdAt     DateTime         @default(now())
+  favChannels   String         @default("[]") @db.Text
+  favUsers      String         @default("[]") @db.Text
 }
 
 model VerificationToken {

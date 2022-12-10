@@ -1,22 +1,16 @@
-import { NextPage } from "next";
+import type { NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
 import React from "react";
 import logo from "../../public/logo.png";
 import Image from "next/image";
-import {
-  Avatar,
-  Button,
-  DarkThemeToggle,
-  Dropdown,
-  Flowbite,
-  Navbar,
-} from "flowbite-react";
+import { Avatar, Dropdown, Navbar } from "flowbite-react";
 import { useRouter } from "next/router";
+import DarkModeToggle from "./darkModeToggle";
 
 const NavBar: NextPage = () => {
   const { data: session, status } = useSession();
 
-  if (session) {
+  if (session && session.user) {
     return (
       <>
         <Navbar fluid={true} rounded={true}>
@@ -31,10 +25,8 @@ const NavBar: NextPage = () => {
             </span>
           </Navbar.Brand>
           <div className="flex md:order-2">
-            <div className="mr-6">
-              <Flowbite>
-                <DarkThemeToggle />
-              </Flowbite>
+            <div className="m-auto mr-6 align-middle">
+              <DarkModeToggle />
             </div>
             <Dropdown
               arrowIcon={false}
@@ -43,7 +35,7 @@ const NavBar: NextPage = () => {
                 <Avatar
                   alt="User settings"
                   img={
-                    session.user!.image ||
+                    session.user.image ||
                     "https://cdn-icons-png.flaticon.com/512/892/892781.png?w=1380&t=st=1669818115~exp=1669818715~hmac=4c0465a1bc19d7c352a786ce0c25f861f8fa42cf40072a22dec3f378921c03d2"
                   }
                   rounded={true}
@@ -51,9 +43,9 @@ const NavBar: NextPage = () => {
               }
             >
               <Dropdown.Header>
-                <span className="block text-sm">{session.user!.name}</span>
+                <span className="block text-sm">{session.user.name}</span>
                 <span className="block truncate text-sm font-medium">
-                  {session.user!.email}
+                  {session.user.email}
                 </span>
               </Dropdown.Header>
               {/*<Dropdown.Item>Dashboard</Dropdown.Item>
@@ -84,10 +76,8 @@ const NavBar: NextPage = () => {
           </span>
         </Navbar.Brand>
         <div className="flex md:order-2">
-          <div className="mr-6">
-            <Flowbite>
-              <DarkThemeToggle />
-            </Flowbite>
+          <div className="mr-6 align-middle">
+            <DarkModeToggle />
           </div>
           <Dropdown
             arrowIcon={false}
