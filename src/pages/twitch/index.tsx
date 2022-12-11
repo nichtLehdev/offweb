@@ -58,18 +58,23 @@ const TwitchPage: NextPage = () => {
       <main className="flex  h-screen flex-col items-center justify-around">
         <div>
           <div>
-            <input
-              className="h-12 rounded-lg rounded-r-none border-2 border-gray-300  bg-inherit px-5 pr-16 text-sm focus:outline-none"
-              id="userSearch"
-              type="text"
-              onChange={(e) => {
-                setSearch(e.target.value);
-              }}
-              placeholder={"search for " + option.toLowerCase()}
-            />
-            <button className="broder-2 h-12 rounded-lg rounded-l-none border-purple-700 bg-purple-700 px-5">
-              <Link href={"/twitch/" + option + "/" + search}>Search</Link>
-            </button>
+            <form action={"/twitch/" + option + "/" + search}>
+              <input
+                className="h-12 rounded-lg rounded-r-none border-2 border-gray-300  bg-inherit px-5 pr-16 text-sm focus:outline-none"
+                id="userSearch"
+                type="text"
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+                placeholder={"search for " + option.toLowerCase()}
+              />
+              <button
+                type="submit"
+                className="broder-2 h-12 rounded-lg rounded-l-none border-purple-700 bg-purple-700 px-5"
+              >
+                Search
+              </button>
+            </form>
           </div>
           <div className="md:mt-5" />
           <div>
@@ -86,7 +91,8 @@ const TwitchPage: NextPage = () => {
             </button>
             <button
               ref={radioChannel}
-              className="h-12 w-1/2 rounded-lg rounded-l-none border border-gray-300 bg-inherit"
+              disabled
+              className="h-12 w-1/2 rounded-lg rounded-l-none border border-gray-300 bg-inherit disabled:cursor-not-allowed disabled:bg-gray-200 disabled:bg-opacity-30"
               onClick={() => {
                 radioUser.current!.classList.remove("bg-purple-700");
                 radioChannel.current!.classList.add("bg-purple-700");

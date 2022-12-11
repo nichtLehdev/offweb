@@ -183,7 +183,7 @@ const LockedSites: () => JSX.Element[] = () => {
   const lockedSites: JSX.Element[] = [];
 
   sites.forEach((site) => {
-    if (router.pathname == site.path) {
+    if (router.pathname.split("/")[1] == site.path.split("/")[1]) {
       site.active = true;
     }
     lockedSites.push(
