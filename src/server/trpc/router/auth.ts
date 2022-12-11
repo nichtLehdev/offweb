@@ -81,7 +81,7 @@ export const authRouter = router({
       return log;
     }),
   getLog: protectedProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({ input: z.string() }))
     .output(
       z.array(
         z.object({
@@ -104,13 +104,19 @@ export const authRouter = router({
           "?auth=" +
           process.env.MESSAGE_STORAGE_TOKEN +
           "&input=" +
-          input.id
+          input.input
       );
       const log = await response.json();
       return log;
     }),
   getLogLimitOffset: protectedProcedure
-    .input(z.object({ id: z.number(), limit: z.number(), offset: z.number() }))
+    .input(
+      z.object({
+        input: z.string(),
+        limit: z.number(),
+        offset: z.number(),
+      })
+    )
     .output(
       z.array(
         z.object({
@@ -133,7 +139,7 @@ export const authRouter = router({
           "?auth=" +
           process.env.MESSAGE_STORAGE_TOKEN +
           "&input=" +
-          input.id +
+          input.input +
           "&limit=" +
           input.limit +
           "&offset=" +
@@ -143,7 +149,7 @@ export const authRouter = router({
       return log;
     }),
   getLogFromChannel: protectedProcedure
-    .input(z.object({ userId: z.number(), channelId: z.number() }))
+    .input(z.object({ userInput: z.string(), channelId: z.number() }))
     .output(
       z.array(
         z.object({
@@ -166,7 +172,7 @@ export const authRouter = router({
           "?auth=" +
           process.env.MESSAGE_STORAGE_TOKEN +
           "&input=" +
-          input.userId +
+          input.userInput +
           "&channelID=" +
           input.channelId
       );
@@ -176,7 +182,7 @@ export const authRouter = router({
   getLogFromChannelLimitOffset: protectedProcedure
     .input(
       z.object({
-        userId: z.number(),
+        userInput: z.string(),
         channelId: z.number(),
         limit: z.number(),
         offset: z.number(),
@@ -204,7 +210,7 @@ export const authRouter = router({
           "?auth=" +
           process.env.MESSAGE_STORAGE_TOKEN +
           "&input=" +
-          input.userId +
+          input.userInput +
           "&channelID=" +
           input.channelId +
           "&limit=" +
@@ -216,7 +222,7 @@ export const authRouter = router({
       return log;
     }),
   getUserMsgCount: protectedProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({ input: z.string() }))
     .query(async ({ input }) => {
       const response = await fetch(
         process.env.MESSAGE_STORAGE_URL +
@@ -224,14 +230,14 @@ export const authRouter = router({
           "?auth=" +
           process.env.MESSAGE_STORAGE_TOKEN +
           "&input=" +
-          input.id
+          input.input
       );
       const log = await response.json();
       return log;
     }),
 
   getChannelMsgCount: protectedProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({ input: z.string() }))
     .output(z.object({ channelID: z.number(), count: z.number() }))
     .query(async ({ input }) => {
       const response = await fetch(
@@ -240,7 +246,7 @@ export const authRouter = router({
           "?auth=" +
           process.env.MESSAGE_STORAGE_TOKEN +
           "&input=" +
-          input.id
+          input.input
       );
       const log = await response.json();
       return log;
