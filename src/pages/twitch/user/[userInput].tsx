@@ -11,6 +11,7 @@ import modIcon from "../../../../public/moderator.png";
 import subIcon from "../../../../public/subscriber.png";
 import Image from "next/image";
 import { Dropdown } from "flowbite-react";
+import LogMessage from "../../../components/logMessage";
 
 const UserPage: NextPage = () => {
   const { data: session, status } = useSession();
@@ -90,7 +91,7 @@ const UserPage: NextPage = () => {
       </>
     );
   }
-  const logs = msgQuery.data as Message[];
+  const logs = msgQuery.data.log as Message[];
   const userName = logs[0]!.userName;
 
   let lastMsgTs = "";
@@ -171,7 +172,12 @@ const UserPage: NextPage = () => {
                       ) : (
                         ""
                       )}
-                      <td className="px-4 py-2">{log.message}</td>
+                      <td className="px-4 py-2">
+                        <LogMessage
+                          message={log}
+                          emotes={msgQuery.data.emotes}
+                        />
+                      </td>
                     </tr>
                   </>
                 ))}

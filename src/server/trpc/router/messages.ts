@@ -1,5 +1,25 @@
 import { router, publicProcedure, protectedProcedure } from "../trpc";
 import { z } from "zod";
+import { Emote, Message } from "../../../types/msg-storage";
+import { ClientCredentialsAuthProvider } from "@twurple/auth";
+import { ApiClient } from "@twurple/api";
+
+const getGlobalEmotes = async () => {
+  const response = await fetch(`${process.env.SEVENTV_API_URL}/emotes/global`);
+  const emotes = await response.json();
+  return emotes;
+};
+
+const getChannelEmotes = async (channelID: string) => {
+  const response = await fetch(
+    `${process.env.SEVENTV_API_URL}/users/${channelID}/emotes`
+  );
+  if (response.status === 404) {
+    return [];
+  }
+  const emotes = (await response.json()) as Emote[];
+  return emotes;
+};
 
 export const msgRouter = router({
   getChannelLog: protectedProcedure
@@ -102,21 +122,43 @@ export const msgRouter = router({
       })
     )
     .output(
-      z.array(
-        z.object({
-          userID: z.number(),
-          userName: z.string(),
-          message: z.string(),
-          moderator: z.boolean(),
-          subscriber: z.boolean(),
-          msgTS: z.string(),
-          table_name: z.string(),
-          channelID: z.number(),
-          channelName: z.string(),
-        })
-      )
+      z.object({
+        emotes: z.object({
+          global: z.array(
+            z.object({
+              name: z.string(),
+              url: z.string(),
+            })
+          ),
+          specific: z.array(
+            z.object({
+              name: z.string(),
+              url: z.string(),
+              channelID: z.string(),
+            })
+          ),
+        }),
+        log: z.array(
+          z.object({
+            userID: z.number(),
+            userName: z.string(),
+            message: z.string(),
+            moderator: z.boolean(),
+            subscriber: z.boolean(),
+            msgTS: z.string(),
+            table_name: z.string(),
+            channelID: z.number(),
+            channelName: z.string(),
+          })
+        ),
+      })
     )
     .query(async ({ input }) => {
+      const authProvider = new ClientCredentialsAuthProvider(
+        process.env.TWITCH_CLIENT_ID!,
+        process.env.TWITCH_CLIENT_SECRET!
+      );
+
       const response = await fetch(
         process.env.MESSAGE_STORAGE_URL +
           "/getLog/" +
@@ -130,7 +172,52 @@ export const msgRouter = router({
           input.offset
       );
       const log = await response.json();
-      return log;
+      const globalEmotes = await getGlobalEmotes();
+      const globalEmotesShort = globalEmotes.map((emote: Emote) => ({
+        name: emote.name,
+        url: emote.urls[1]![1],
+      }));
+      const channels = log.map((msg: Message) => msg.channelID);
+      const uniqueChannels = [...new Set(channels)] as string[];
+      const channelEmotes: { name: string; url: string; channelID: string }[] =
+        [];
+      for (const channel of uniqueChannels) {
+        const emotes = await getChannelEmotes(channel);
+        for (const emote of emotes) {
+          channelEmotes.push({
+            name: emote.name,
+            url: emote.urls[0]![1],
+            channelID: channel.toString(),
+          });
+        }
+      }
+      const apiClient = new ApiClient({ authProvider });
+      if (apiClient) {
+        for (const channel of channels) {
+          const twitchEmotes = await apiClient.chat.getChannelEmotes(channel);
+          if (twitchEmotes[0]) {
+            const allTwitchEmotes =
+              await twitchEmotes[0]!.getAllEmotesFromSet();
+            for (const emote of allTwitchEmotes) {
+              channelEmotes.push({
+                name: emote.name,
+                url:
+                  emote.getAnimatedImageUrl("1.0", "light") ||
+                  emote.getImageUrl(1),
+                channelID: channel.toString(),
+              });
+            }
+          }
+        }
+      }
+
+      return {
+        emotes: {
+          global: globalEmotesShort,
+          specific: channelEmotes,
+        },
+        log: log,
+      };
     }),
   getLogFromChannel: protectedProcedure
     .input(z.object({ userInput: z.string(), channelId: z.number() }))
