@@ -191,6 +191,7 @@ export const msgRouter = router({
           });
         }
       }
+      /*
       const apiClient = new ApiClient({ authProvider });
       if (apiClient) {
         for (const channel of channels) {
@@ -209,7 +210,7 @@ export const msgRouter = router({
             }
           }
         }
-      }
+      }*/
 
       return {
         emotes: {
