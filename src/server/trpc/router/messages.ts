@@ -1,8 +1,6 @@
 import { router, publicProcedure, protectedProcedure } from "../trpc";
 import { z } from "zod";
 import { Emote, Message } from "../../../types/msg-storage";
-import { ClientCredentialsAuthProvider } from "@twurple/auth";
-import { ApiClient } from "@twurple/api";
 
 const getGlobalEmotes = async () => {
   const response = await fetch(`${process.env.SEVENTV_API_URL}/emotes/global`);
@@ -154,11 +152,6 @@ export const msgRouter = router({
       })
     )
     .query(async ({ input }) => {
-      const authProvider = new ClientCredentialsAuthProvider(
-        process.env.TWITCH_CLIENT_ID!,
-        process.env.TWITCH_CLIENT_SECRET!
-      );
-
       const response = await fetch(
         process.env.MESSAGE_STORAGE_URL +
           "/getLog/" +
