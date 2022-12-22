@@ -21,11 +21,11 @@ const UserPage: NextPage = () => {
   let page = Number(query.page) || 0;
   if (page < 0) page = 0;
 
-  const msgCountQuery = trpc.auth.getUserMsgCount.useQuery({
+  const msgCountQuery = trpc.messages.getUserMsgCount.useQuery({
     input: userInput as string,
   });
 
-  const msgQuery = trpc.auth.getLogLimitOffset.useQuery({
+  const msgQuery = trpc.messages.getLogLimitOffset.useQuery({
     limit: limit,
     offset: limit * page,
     input: userInput as string,
@@ -120,7 +120,7 @@ const UserPage: NextPage = () => {
                               <p className="w-1/5 text-center text-sm font-bold">
                                 {new Date(
                                   parseInt(log.msgTS)
-                                ).toLocaleDateString()}
+                                ).toLocaleDateString("de-DE")}
                               </p>
                               <hr className="h-0.5 w-2/5" />
                             </div>
