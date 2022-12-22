@@ -93,6 +93,8 @@ const UserPage: NextPage = () => {
   const logs = msgQuery.data as Message[];
   const userName = logs[0]!.userName;
 
+  let lastMsgTs = "";
+
   return (
     <>
       <NavBar />
@@ -106,49 +108,72 @@ const UserPage: NextPage = () => {
             <table className="table-auto">
               <tbody>
                 {logs.map((log) => (
-                  <tr key={log.msgTS}>
-                    <td className="w-32 py-2 pr-0 pl-2">
-                      {new Date(parseInt(log.msgTS)).toLocaleTimeString()}
-                    </td>
-                    <td className="w-fit px-1 py-2 font-semibold">
-                      #{log.channelName}
-                    </td>
-                    {showName ? (
-                      <td className="flex h-fit w-fit flex-row px-1 py-2">
-                        {log.userName}{" "}
-                        {log.userID == log.channelID ? (
-                          <Image
-                            className="mt-1.5 ml-2 inline-flex h-4 w-4"
-                            src={bcIcon}
-                            alt=""
-                          />
-                        ) : (
-                          ""
-                        )}
-                        {log.moderator ? (
-                          <Image
-                            className="mt-1.5 ml-2 inline-flex h-4 w-4"
-                            src={modIcon}
-                            alt=""
-                          />
-                        ) : (
-                          ""
-                        )}
-                        {log.subscriber ? (
-                          <Image
-                            className="mt-1.5 ml-2 inline-flex h-4 w-4"
-                            src={subIcon}
-                            alt=""
-                          />
-                        ) : (
-                          ""
-                        )}
-                      </td>
+                  <>
+                    {new Date(parseInt(log.msgTS)).toLocaleDateString() !==
+                    new Date(parseInt(lastMsgTs)).toLocaleDateString() ? (
+                      <>
+                        {console.log((lastMsgTs = log.msgTS))}
+                        <tr>
+                          <td colSpan={10}>
+                            <div className="flex w-full flex-row items-center dark:opacity-40">
+                              <hr className="h-0.5 w-2/5" />
+                              <p className="w-1/5 text-center text-sm font-bold">
+                                {new Date(
+                                  parseInt(log.msgTS)
+                                ).toLocaleDateString()}
+                              </p>
+                              <hr className="h-0.5 w-2/5" />
+                            </div>
+                          </td>
+                        </tr>
+                      </>
                     ) : (
                       ""
                     )}
-                    <td className="px-4 py-2">{log.message}</td>
-                  </tr>
+                    <tr key={log.msgTS}>
+                      <td className="w-32 py-2 pr-0 pl-2">
+                        {new Date(parseInt(log.msgTS)).toLocaleTimeString()}
+                      </td>
+                      <td className="w-fit px-1 py-2 font-semibold">
+                        #{log.channelName}
+                      </td>
+                      {showName ? (
+                        <td className="flex h-fit w-fit flex-row items-center px-1 py-2 align-middle">
+                          {log.userName}{" "}
+                          {log.userID == log.channelID ? (
+                            <Image
+                              className="mt-1.5 ml-2 inline-flex h-4 w-4"
+                              src={bcIcon}
+                              alt=""
+                            />
+                          ) : (
+                            ""
+                          )}
+                          {log.moderator ? (
+                            <Image
+                              className="mt-1.5 ml-2 inline-flex h-4 w-4"
+                              src={modIcon}
+                              alt=""
+                            />
+                          ) : (
+                            ""
+                          )}
+                          {log.subscriber ? (
+                            <Image
+                              className="mt-1.5 ml-2 inline-flex h-4 w-4"
+                              src={subIcon}
+                              alt=""
+                            />
+                          ) : (
+                            ""
+                          )}
+                        </td>
+                      ) : (
+                        ""
+                      )}
+                      <td className="px-4 py-2">{log.message}</td>
+                    </tr>
+                  </>
                 ))}
               </tbody>
             </table>
@@ -183,7 +208,7 @@ const UserPage: NextPage = () => {
                 <>
                   <Link href={`/twitch/user/${userInput}?page=0`}>
                     <span className="mr-2 cursor-pointer rounded-lg border border-gray-300 p-2">
-                      {0}
+                      {1}
                     </span>
                   </Link>
                   <Link href={`/twitch/user/${userInput}?page=${page - 5}`}>
