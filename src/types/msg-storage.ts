@@ -17,3 +17,30 @@ export type Message = {
   channelID: number;
   channelName: string;
 };
+
+export type returnedGlobalEmote = {
+  name: string;
+  url: string;
+};
+
+export type returnedChannelEmote = {
+  name: string;
+  url: string;
+  channelID: string;
+};
+
+export type Emote = {
+  id: string;
+  name: string;
+  owner: EmoteOwner;
+  visibility: number;
+  status: number;
+  urls: [string, string][];
+};
+
+export type EmoteOwner = {
+  id: string;
+  twitch_id: string;
+  login: string;
+  display_name: string;
+};

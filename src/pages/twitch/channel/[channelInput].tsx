@@ -25,11 +25,11 @@ const ChannelPage: NextPage = () => {
   const channel = Number(channelInput as string);
   console.log(channel);
 
-  const msgCountQuery = trpc.auth.getChannelMsgCount.useQuery({
+  const msgCountQuery = trpc.messages.getChannelMsgCount.useQuery({
     input: channelInput as string,
   });
 
-  const msgQuery = trpc.auth.getChannelLogLimitOffset.useQuery({
+  const msgQuery = trpc.messages.getChannelLogLimitOffset.useQuery({
     limit: limit,
     offset: limit * page,
     id: channel,
