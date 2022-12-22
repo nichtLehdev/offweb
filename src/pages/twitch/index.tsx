@@ -10,7 +10,7 @@ import { trpc } from "../../utils/trpc";
 const TwitchPage: NextPage = () => {
   const { data: session, status } = useSession();
   const channelQuery = trpc.auth.getAllChannels.useQuery({ onlyCurrent: true });
-  const msgQuery = trpc.auth.getOverallMsgCount.useQuery();
+  const msgQuery = trpc.messages.getOverallMsgCount.useQuery();
   const [search, setSearch] = useState("");
   const [option, setOption] = useState("user");
 
