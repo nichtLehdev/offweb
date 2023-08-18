@@ -6,7 +6,17 @@ module.exports = {
   ],
   darkMode: "class",
   theme: {
-    extend: {},
+    extend: {
+      keyframes: {
+        banner: {
+          "0%": { transform: "translateX (0)" },
+          "100%": { transform: "translateX(-180%)" },
+        },
+      },
+      animation: {
+        banner: "banner 15s alternate ease-in-out infinite",
+      },
+    },
   },
   variants: {
     extend: {

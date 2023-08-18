@@ -1,11 +1,8 @@
 import { type NextPage } from "next";
-import Head from "next/head";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { signIn, signOut, useSession } from "next-auth/react";
 
 import NavBar from "../components/navbar";
-
-import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {
   const { data: session, status } = useSession();
@@ -21,28 +18,23 @@ const Home: NextPage = () => {
   return (
     <>
       <NavBar />
-      <main>Guestbook</main>
-      {session ? (
-        <div>
-          <p>Hi {session.user?.name}</p>
-          <button onClick={() => signOut()}> Logout</button>
+      <main className="flex  h-screen flex-col items-center justify-around">
+        <div className="flex w-full flex-col items-center justify-center">
+          <div>
+            <span className="group relative text-9xl font-black">Offchat</span>
+          </div>
+
+          <div className="w-xl flex flex-row items-center justify-center overflow-hidden">
+            <span className="block max-w-xl animate-banner whitespace-nowrap text-center text-3xl font-black">
+              We are a group of hobbyist developers with different projects.
+              This website is currently under development.
+            </span>
+          </div>
+          <span className="mt-10 animate-pulse whitespace-nowrap text-3xl font-black underline ">
+            <Link href={"https://github.com/Offchat"}>Go to Github</Link>
+          </span>
         </div>
-      ) : (
-        <div>
-          <button
-            className="rounded-md bg-neutral-600 p-2"
-            onClick={() => signIn("discord")}
-          >
-            Login with Discord
-          </button>
-          <button
-            className="rounded-md bg-neutral-600 p-2"
-            onClick={() => signIn("github")}
-          >
-            Login with Github
-          </button>
-        </div>
-      )}
+      </main>
     </>
   );
 };
