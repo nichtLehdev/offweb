@@ -8,3 +8,4 @@ body {
 main {
   @apply h-screen w-full bg-gray-200 text-neutral-900 dark:bg-gray-900 dark:text-neutral-50;
 }
+

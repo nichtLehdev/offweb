@@ -1,6 +1,5 @@
 import type { NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
-import React from "react";
 import logo from "../../public/logo.png";
 import Image from "next/image";
 import { Avatar, Dropdown, Navbar } from "flowbite-react";
@@ -8,7 +7,7 @@ import { useRouter } from "next/router";
 import DarkModeToggle from "./darkModeToggle";
 
 const NavBar: NextPage = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
   if (session && session.user) {
     return (
@@ -56,7 +55,7 @@ const NavBar: NextPage = () => {
             </Dropdown>
             <Navbar.Toggle />
           </div>
-          <Navbar.Collapse>{ShowSites(session.user!.access)}</Navbar.Collapse>
+          <Navbar.Collapse>{ShowSites(session.user.access)}</Navbar.Collapse>
         </Navbar>
       </>
     );
@@ -76,7 +75,7 @@ const NavBar: NextPage = () => {
           </span>
         </Navbar.Brand>
         <div className="flex md:order-2">
-          <div className="mr-6 align-middle">
+          <div className="m-auto mr-6 align-middle">
             <DarkModeToggle />
           </div>
           <Dropdown
@@ -128,7 +127,7 @@ const PublicSites: () => JSX.Element[] = () => {
       path: "/",
       active: false,
     },
-    {
+    /*{
       name: "About",
       path: "/about",
       active: false,
@@ -137,7 +136,7 @@ const PublicSites: () => JSX.Element[] = () => {
       name: "Contact",
       path: "/contact",
       active: false,
-    },
+    },*/
   ];
 
   const publicSites: JSX.Element[] = [];
