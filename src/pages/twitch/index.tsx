@@ -1,10 +1,9 @@
-import { Button, Dropdown } from "flowbite-react";
-import { NextPage } from "next";
+import { Button } from "flowbite-react";
+import type { NextPage } from "next";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import NavBar from "../../components/navbar";
-import { Channel } from "../../types/msg-storage";
 import { trpc } from "../../utils/trpc";
 
 const TwitchPage: NextPage = () => {
@@ -104,9 +103,9 @@ const TwitchPage: NextPage = () => {
           </div>
         </div>
         <div className="flex w-full flex-col items-center justify-center">
-          <span className="group text-9xl font-black">
+          <span className="text-9xl font-black">
             {allMessages.toLocaleString()}
-            <span className="hidden text-right text-3xl font-black group-hover:block">
+            <span className="block text-right text-3xl font-black ">
               Messages
             </span>
           </span>
@@ -115,7 +114,7 @@ const TwitchPage: NextPage = () => {
           <div className="m-6"></div>
           <span className="group text-9xl font-black">
             {channels.length.toLocaleString()}
-            <span className="hidden text-right text-3xl font-black group-hover:block">
+            <span className="block text-right text-3xl font-black">
               Channels
             </span>
           </span>

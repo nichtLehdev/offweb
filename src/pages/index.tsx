@@ -5,7 +5,7 @@ import Link from "next/link";
 import NavBar from "../components/navbar";
 
 const Home: NextPage = () => {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
 
   if (status === "loading") {
     return (
