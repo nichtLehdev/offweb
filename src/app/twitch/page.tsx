@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
-export function TwitchPage() {
+export default function TwitchPage() {
   const session = useSession();
   const channelQuery = api.twitch.getChannels.useQuery();
   const msgQuery = api.twitch.getMessageCountAll.useQuery();
@@ -172,5 +172,3 @@ export function TwitchPage() {
     </>
   );
 }
-
-export default TwitchPage;
