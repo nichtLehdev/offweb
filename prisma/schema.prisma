@@ -6,18 +6,24 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
+  provider = "sqlite"
+  // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
   // Further reading:
   // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
   // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
   url      = env("DATABASE_URL")
 }
 
-model Example {
-  id        String   @id @default(cuid())
+model Post {
+  id        Int      @id @default(autoincrement())
+  name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String
+
+  @@index([name])
 }
 
 // Necessary for Next auth
@@ -27,12 +33,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String? // @db.Text
+  access_token      String? // @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String? // @db.Text
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -48,18 +54,15 @@ model Session {
 }
 
 model User {
-  id            String           @id @default(cuid())
+  id            String       @id @default(cuid())
   name          String?
-  email         String?          @unique
+  email         String?      @unique
   emailVerified DateTime?
-  image         String? 
+  image         String?
   accounts      Account[]
   sessions      Session[]
-  access        Boolean          @default(false)
-  theme         String           @default("dark")
-  createdAt     DateTime         @default(now())
-  favChannels   String         @default("[]") @db.Text
-  favUsers      String         @default("[]") @db.Text
+  posts         Post[]
+  access        UserAccess[]
 }
 
 model VerificationToken {
@@ -68,4 +71,28 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model UserAccess {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  accessTo Module[] @relation("AccessTo")
+
+  @@index([userId])
+}
+
+model Module {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accessBy UserAccess[] @relation("AccessTo")
+
+  @@index([name])
 }
