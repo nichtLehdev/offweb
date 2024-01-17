@@ -1,26 +1,37 @@
 import { type Message as MessageType } from "@/types/msg-storage";
 import { Skeleton } from "./ui/skeleton";
 import { Button } from "./ui/button";
+import Image from "next/image";
 
 export function MessageBox(props: {
   logs: MessageType[];
+  logCount: number;
   visibleChannelIds: number[];
   page: number;
   itemsPerPage: number;
+  fullDataLoaded: boolean;
+  mode: "user" | "channel";
   setItemsPerPage: (itemsPerPage: number) => void;
   setPage: (page: number) => void;
 }) {
-  const filteredPageCount = Math.ceil(
-    props.logs.filter((log) => props.visibleChannelIds.includes(log.channelID))
-      .length / props.itemsPerPage,
-  );
+  const filteredPageCount =
+    props.mode == "user"
+      ? Math.ceil(
+          props.logs.filter((log) =>
+            props.visibleChannelIds.includes(log.channelID),
+          ).length / props.itemsPerPage,
+        )
+      : Math.ceil(props.logCount / props.itemsPerPage);
 
-  const pageLogs = props.logs
-    .filter((log) => props.visibleChannelIds.includes(log.channelID))
-    .slice(
-      (props.page - 1) * props.itemsPerPage,
-      props.page * props.itemsPerPage,
-    );
+  const pageLogs =
+    props.mode == "user"
+      ? props.logs
+          .filter((log) => props.visibleChannelIds.includes(log.channelID))
+          .slice(
+            (props.page - 1) * props.itemsPerPage,
+            props.page * props.itemsPerPage,
+          )
+      : props.logs;
 
   if (props.logs.length === 0) {
     return (
@@ -37,12 +48,39 @@ export function MessageBox(props: {
     );
   }
 
+  if (pageLogs.length === 0) {
+    return (
+      <div className=" flex max-h-screen w-full flex-col gap-2 overflow-x-hidden rounded-lg border-2 border-solid border-slate-300 bg-slate-900 p-2 text-slate-300">
+        <span className="text-center text-slate-300">
+          No messages here! You may need to change the filter.
+        </span>
+        {!props.fullDataLoaded && (
+          <div>
+            <span className="text-center text-slate-300">
+              Loading more messages...
+            </span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <>
-      <div className="flex flex-col justify-center gap-2">
+      <div className="flex min-w-full flex-col justify-center gap-2">
+        {!props.fullDataLoaded && (
+          <div>
+            <span className="text-center text-slate-300">
+              Loading more messages...
+            </span>
+          </div>
+        )}
         <div className=" flex max-h-screen w-full flex-col gap-2 overflow-x-hidden overflow-y-scroll rounded-lg border-2 border-solid border-slate-300 bg-slate-900 p-2 text-slate-300">
           {pageLogs.map((log) => {
-            if (props.visibleChannelIds.includes(log.channelID)) {
+            if (
+              props.visibleChannelIds.includes(log.channelID) ||
+              props.mode == "channel"
+            ) {
               return (
                 <div
                   key={log.msgTS + new Date().getTime()}
@@ -56,6 +94,8 @@ export function MessageBox(props: {
                     subscriber={log.subscriber}
                     moderator={log.moderator}
                     broadcaster={log.userName === log.channelName}
+                    showName
+                    mode={props.mode}
                   />
                 </div>
               );
@@ -129,16 +169,88 @@ function Message(props: {
   moderator: boolean;
   broadcaster: boolean;
   showName?: boolean;
+  mode?: "user" | "channel";
 }) {
-  if (props.showName) {
+  if (props.mode == "channel") {
     return (
       <>
-        <div className="grid w-full grid-cols-[10%_10%_10%_70%] gap-1">
+        <div className="grid w-full grid-cols-[15%_15%_60%] gap-1">
           <span className="col-span-1 text-xs text-slate-600">
             {new Date(props.timestamp).toLocaleString()}
           </span>
-          <span className="col-span-1">#{props.channelName}</span>
-          <span className="col-span-1">@{props.userName}</span>
+          <span className="col-span-1 flex h-full gap-1 align-middle">
+            {(props.broadcaster && (
+              <Image
+                src={"/broadcaster.png"}
+                className="mt-1 h-4 w-4"
+                alt=""
+                width={50}
+                height={50}
+              />
+            )) ||
+              (props.moderator && (
+                <Image
+                  src={"/moderator.png"}
+                  className="mt-1 h-4 w-4"
+                  alt=""
+                  width={50}
+                  height={50}
+                />
+              ))}
+            {props.subscriber && (
+              <Image
+                src={"/subscriber.png"}
+                className="mt-1 h-4 w-4"
+                alt=""
+                width={50}
+                height={50}
+              />
+            )}
+            {props.userName}
+          </span>
+          <span className="col-span-1">{props.message}</span>
+        </div>
+      </>
+    );
+  }
+  if (props.showName) {
+    return (
+      <>
+        <div className="grid w-full grid-cols-[15%_10%_15%_60%] gap-1">
+          <span className="col-span-1 text-xs text-slate-600">
+            {new Date(props.timestamp).toLocaleString()}
+          </span>
+          <span className="col-span-1 break-words">#{props.channelName}</span>
+          <span className="col-span-1 flex h-full gap-1 align-middle">
+            {(props.broadcaster && (
+              <Image
+                src={"/broadcaster.png"}
+                className="mt-1 h-4 w-4"
+                alt=""
+                width={50}
+                height={50}
+              />
+            )) ||
+              (props.moderator && (
+                <Image
+                  src={"/moderator.png"}
+                  className="mt-1 h-4 w-4"
+                  alt=""
+                  width={50}
+                  height={50}
+                />
+              ))}
+            {props.subscriber && (
+              <Image
+                src={"/subscriber.png"}
+                className="mt-1 h-4 w-4"
+                alt=""
+                width={50}
+                height={50}
+              />
+            )}
+            {props.userName}
+          </span>
           <span className="col-span-1">{props.message}</span>
         </div>
       </>

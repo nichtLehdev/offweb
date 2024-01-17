@@ -37,20 +37,7 @@ export const twitchRouter = t.router({
       ).json()) as Message[];
       const channels = logs.map((log) => log.channelID);
 
-      const uniqueChannels = [] as { channelId: number; msgCount: number }[];
-      channels.forEach((channel) => {
-        if (
-          !uniqueChannels.find(
-            (uniqueChannel) => uniqueChannel.channelId === channel,
-          )
-        ) {
-          uniqueChannels.push({ channelId: channel, msgCount: 1 });
-        } else {
-          uniqueChannels.find(
-            (uniqueChannel) => uniqueChannel.channelId === channel,
-          )!.msgCount++;
-        }
-      });
+      const uniqueChannels = [...new Set(channels)];
 
       const allCurrentChannels = (await (
         await fetch(
@@ -65,17 +52,38 @@ export const twitchRouter = t.router({
       }[];
       uniqueChannels.forEach((uniqueChannel) => {
         const currentChannel = allCurrentChannels.find(
-          (currentChannel) =>
-            currentChannel.channelId === uniqueChannel.channelId,
+          (currentChannel) => currentChannel.channelId === uniqueChannel,
         );
         if (currentChannel) {
           filteredChannels.push({
-            channelId: uniqueChannel.channelId,
+            channelId: uniqueChannel,
             displayName: currentChannel.displayName,
-            msgCount: uniqueChannel.msgCount,
+            msgCount: 0,
           });
         }
       });
+
+      for (const filteredChannel of filteredChannels) {
+        // get count of logs of user in channel
+        const count = (await (
+          await fetch(
+            env.CARDINAL_URL +
+              "msgCount" +
+              "?input=" +
+              input.userInput +
+              "&channelID=" +
+              filteredChannel.channelId +
+              "&auth=" +
+              env.CARDINAL_TOKEN,
+          )
+        ).json()) as {
+          channels: number;
+          count: number;
+          userID: number;
+          userName: string;
+        };
+        filteredChannel.msgCount = count.count;
+      }
 
       // sort by msgCount
       filteredChannels.sort((a, b) => b.msgCount - a.msgCount);
@@ -87,7 +95,7 @@ export const twitchRouter = t.router({
       z.object({
         userInput: z.string() || z.number(),
         limit: z.number().optional(),
-        offset: z.number().optional(),
+        offset: z.number().optional().default(0),
       }),
     )
     .query(async ({ input }) => {
@@ -181,4 +189,79 @@ export const twitchRouter = t.router({
 
     return moduleAccess ? true : false;
   }),
+  getLogsInChannel: protectedProcedure
+    .input(
+      z.object({
+        userInput: z.string() || z.number(),
+        length: z.number().default(50),
+        offset: z.number().default(0),
+      }),
+    )
+    .query(async ({ input }) => {
+      const limitoffset =
+        input.length && input.offset
+          ? "&limit=" + input.length + "&offset=" + input.offset
+          : "&limit=" + 50 + "&offset=" + 0;
+
+      const channel = (await (
+        await fetch(
+          env.CARDINAL_URL +
+            "msgCountChannel" +
+            "?input=" +
+            input.userInput +
+            "&auth=" +
+            env.CARDINAL_TOKEN,
+        )
+      ).json()) as {
+        channelID: number;
+        count: number;
+      };
+
+      const logs = (await (
+        await fetch(
+          env.CARDINAL_URL +
+            "getChannelLog" +
+            "?channelId=" +
+            Number(channel.channelID) +
+            "&auth=" +
+            env.CARDINAL_TOKEN +
+            limitoffset,
+        )
+      ).json()) as Message[];
+
+      // remove duplicates
+      const uniqueLogs = [] as Message[];
+      logs.forEach((log) => {
+        if (!uniqueLogs.find((uniqueLog) => uniqueLog.msgTS === log.msgTS)) {
+          uniqueLogs.push(log);
+        }
+      });
+
+      // sort by msgTS
+      uniqueLogs.sort(
+        (a, b) => new Date(b.msgTS).getTime() - new Date(a.msgTS).getTime(),
+      );
+      return logs;
+    }),
+  getMessageCountOfChannel: protectedProcedure
+    .input(
+      z.object({
+        userInput: z.string() || z.number(),
+      }),
+    )
+    .query(async ({ input }) => {
+      return (await (
+        await fetch(
+          env.CARDINAL_URL +
+            "msgCountChannel" +
+            "?input=" +
+            input.userInput +
+            "&auth=" +
+            env.CARDINAL_TOKEN,
+        )
+      ).json()) as {
+        channelID: number;
+        count: number;
+      };
+    }),
 });

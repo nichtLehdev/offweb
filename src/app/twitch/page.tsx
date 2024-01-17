@@ -134,7 +134,6 @@ export default function TwitchPage() {
                   radioChannel.current!.classList.remove("hover:bg-purple-950");
                   setOption("channel");
                 }}
-                disabled
               >
                 Channel
               </Button>

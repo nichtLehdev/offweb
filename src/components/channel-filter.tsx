@@ -1,7 +1,48 @@
+import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 import { Skeleton } from "./ui/skeleton";
 
 export function ChannelFilter(props: {
+  allChannels: { displayName: string; msgCount: number }[];
+  filteredChannels: string[];
+  setChannels: (channels: string[]) => void;
+}) {
+  return (
+    <>
+      <div className="flex flex-col justify-center gap-2">
+        <ChannelSelect
+          allChannels={props.allChannels}
+          filteredChannels={props.filteredChannels}
+          setChannels={props.setChannels}
+        />
+        {props.allChannels.length > 0 && (
+          <div className="flex justify-center gap-2">
+            <Button
+              className="rounded-lg bg-slate-300 p-2 hover:bg-slate-100"
+              onClick={() => {
+                props.setChannels([]);
+              }}
+            >
+              Clear
+            </Button>
+            <Button
+              className="rounded-lg bg-slate-300 p-2 hover:bg-slate-100"
+              onClick={() => {
+                props.setChannels(
+                  props.allChannels.map((channel) => channel.displayName),
+                );
+              }}
+            >
+              Select All
+            </Button>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+function ChannelSelect(props: {
   allChannels: { displayName: string; msgCount: number }[];
   filteredChannels: string[];
   setChannels: (channels: string[]) => void;

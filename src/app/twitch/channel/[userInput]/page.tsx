@@ -2,7 +2,6 @@
 import { api } from "@/trpc/react";
 import { redirect, useParams } from "next/navigation";
 import { useState } from "react";
-import { ChannelFilter } from "@/components/channel-filter";
 import { MessageBox } from "@/components/message-box";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -16,35 +15,21 @@ export default function UserPage() {
   const params = useParams();
   const userInput = params.userInput as string;
 
-  // initially load first 100 logs of each channel
-  const initialMessageQuery = api.twitch.getLogOfUser.useQuery({
-    userInput: userInput,
-    limit: 100,
-  });
-
   // stores the names of the channels that are currently visible
-  const [visibleChannels, setVisibleChannels] = useState<string[]>([]);
   const [itemsPerPage, setItemsPerPage] = useState(50);
   const [page, setPage] = useState(1);
 
-  const channelQuery = api.twitch.getChannelsOfUser.useQuery({
+  // Query logs for 1 page at a time
+  const messageQuery = api.twitch.getLogsInChannel.useQuery({
     userInput: userInput,
+    length: itemsPerPage,
+    offset: (page - 1) * itemsPerPage,
   });
-  const messageQuery = api.twitch.getLogOfUser.useQuery({
-    userInput: userInput,
-  });
-  const messageCountQuery = api.twitch.getMessageCountOfUser.useQuery({
+
+  const messageCountQuery = api.twitch.getMessageCountOfChannel.useQuery({
     userInput: userInput,
   });
   const accessQuery = api.twitch.getModuleAccess.useQuery();
-
-  // get the channel ids of the visible channels
-  const visibleChannelIds = visibleChannels.map((channel) => {
-    const channelData = channelQuery.data?.find(
-      (channelData) => channelData.displayName === channel,
-    );
-    return channelData?.channelId ?? -1;
-  });
 
   if (!session) {
     redirect("/not-logged-in?path=/twitch/user/" + userInput);
@@ -84,29 +69,24 @@ export default function UserPage() {
         <main className="flex h-screen w-full max-w-7xl flex-col justify-center gap-8 ">
           <div>
             <h1 className="text-center text-2xl font-bold text-slate-200">
-              Messages of {userInput}
+              Messages in #{userInput}
             </h1>
             <h2 className="text-center text-xl text-slate-400">
-              Stored <b>{messageCountQuery.data?.count ?? 0}</b> messages in{" "}
-              <b>{messageCountQuery.data?.channels ?? 0}</b> channels
+              Stored <b>{messageCountQuery.data?.count ?? 0}</b> messages by{" "}
+              <b>{0}</b> users
             </h2>
           </div>
-          <div className="flex max-h-[48rem] max-w-5xl gap-4">
-            <ChannelFilter
-              allChannels={channelQuery.data ?? []}
-              filteredChannels={visibleChannels}
-              setChannels={setVisibleChannels}
-            />
+          <div className="flex max-h-[48rem] max-w-7xl gap-4">
             <MessageBox
-              logs={messageQuery.data ?? initialMessageQuery.data ?? []}
+              logs={messageQuery.data ?? []}
               logCount={messageCountQuery.data?.count ?? 0}
               fullDataLoaded={messageQuery.data !== undefined}
-              visibleChannelIds={visibleChannelIds}
+              visibleChannelIds={[]}
               page={page}
               itemsPerPage={itemsPerPage}
               setItemsPerPage={setItemsPerPage}
               setPage={setPage}
-              mode="user"
+              mode="channel"
             />
           </div>
         </main>
