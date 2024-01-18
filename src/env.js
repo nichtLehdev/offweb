@@ -12,7 +12,7 @@ export const env = createEnv({
       .url()
       .refine(
         (str) => !str.includes("YOUR_MYSQL_URL_HERE"),
-        "You forgot to change the default URL"
+        "You forgot to change the default URL",
       ),
     NODE_ENV: z
       .enum(["development", "test", "production"])
@@ -26,13 +26,22 @@ export const env = createEnv({
       // Since NextAuth.js automatically uses the VERCEL_URL if present.
       (str) => process.env.VERCEL_URL ?? str,
       // VERCEL_URL doesn't include `https` so it cant be validated as a URL
-      process.env.VERCEL ? z.string() : z.string().url()
+      process.env.VERCEL ? z.string() : z.string().url(),
     ),
     AUTH_PASSAGE_ID: z.string(),
     AUTH_PASSAGE_SECRET: z.string(),
     AUTH_PASSAGE_ISSUER: z.string(),
     CARDINAL_URL: z.string().url(),
     CARDINAL_TOKEN: z.string(),
+    TRAEWELLING_URL: z.string().url(),
+    TRAEWELLING_CLIENT_ID: z.string(),
+    TRAEWELLING_CLIENT_SECRET: z.string(),
+    TRAEWELLING_REDIRECT_URI: z.string().url(),
+    OFFBOT_URL: z.string(),
+    OFFBOT_PORT: z.string().default("3306"),
+    OFFBOT_USER: z.string(),
+    OFFBOT_PASSWORD: z.string(),
+    OFFBOT_DATABASE: z.string(),
   },
 
   /**
@@ -58,6 +67,15 @@ export const env = createEnv({
     AUTH_PASSAGE_ISSUER: process.env.AUTH_PASSAGE_ISSUER,
     CARDINAL_URL: process.env.CARDINAL_URL,
     CARDINAL_TOKEN: process.env.CARDINAL_TOKEN,
+    TRAEWELLING_URL: process.env.TRAEWELLING_URL,
+    TRAEWELLING_CLIENT_ID: process.env.TRAEWELLING_CLIENT_ID,
+    TRAEWELLING_CLIENT_SECRET: process.env.TRAEWELLING_CLIENT_SECRET,
+    TRAEWELLING_REDIRECT_URI: process.env.TRAEWELLING_REDIRECT_URI,
+    OFFBOT_URL: process.env.OFFBOT_URL,
+    OFFBOT_PORT: process.env.OFFBOT_PORT,
+    OFFBOT_USER: process.env.OFFBOT_USER,
+    OFFBOT_PASSWORD: process.env.OFFBOT_PASSWORD,
+    OFFBOT_DATABASE: process.env.OFFBOT_DATABASE,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

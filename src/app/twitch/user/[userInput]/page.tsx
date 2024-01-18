@@ -27,6 +27,11 @@ export default function UserPage() {
   const [itemsPerPage, setItemsPerPage] = useState(50);
   const [page, setPage] = useState(1);
 
+  const changeChannelFilter = (channels: string[]) => {
+    setPage(1);
+    setVisibleChannels(channels);
+  };
+
   const channelQuery = api.twitch.getChannelsOfUser.useQuery({
     userInput: userInput,
   });
@@ -95,7 +100,7 @@ export default function UserPage() {
             <ChannelFilter
               allChannels={channelQuery.data ?? []}
               filteredChannels={visibleChannels}
-              setChannels={setVisibleChannels}
+              setChannels={changeChannelFilter}
             />
             <MessageBox
               logs={messageQuery.data ?? initialMessageQuery.data ?? []}
