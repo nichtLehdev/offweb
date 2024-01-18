@@ -1,4 +1,4 @@
-import { NextApiRequest } from "next";
+import { type NextApiRequest } from "next";
 import { env } from "@/env";
 import mariadb from "mariadb";
 import dayjs from "dayjs";
@@ -13,6 +13,7 @@ const pool = mariadb.createPool({
 });
 
 async function handler(req: NextApiRequest) {
+  // @ts-expect-error: 2339
   const json = await req.json();
 
   const status = json.status;
