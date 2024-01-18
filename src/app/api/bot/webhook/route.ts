@@ -88,6 +88,8 @@ async function handler(req: NextApiRequest) {
     },
   );
 
+  let price = 0;
+
   const timetable = await response.json();
 
   const connections = timetable.verbindungen;
@@ -129,13 +131,19 @@ async function handler(req: NextApiRequest) {
     }
     console.log("Found matching connection: Train: " + lineName);
     if (connection.angebotsPreis) {
-      const price = connection.angebotsPreis.betrag;
+      price = connection.angebotsPreis.betrag;
       console.log("Price: " + price);
     }
     break;
   }
 
-  return new Response("Hello World", {
+  const conn = await pool.getConnection();
+  const query =
+    "INSERT INTO `traewelling_checkin` VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `tw_status_id` = ?";
+  await conn.query(query, [status.id, status.user, price, status.id]);
+  await conn.release();
+
+  return new Response("New Checkin imported", {
     status: 200,
   });
 }
