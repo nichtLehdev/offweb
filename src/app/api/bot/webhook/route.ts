@@ -3,6 +3,7 @@ import mariadb from "mariadb";
 import dayjs from "dayjs";
 import { type Status } from "@/types/traewelling";
 import { type NextRequest, NextResponse } from "next/server";
+import { Server } from "socket.io";
 
 const pool = mariadb.createPool({
   host: env.OFFBOT_URL,
@@ -12,6 +13,8 @@ const pool = mariadb.createPool({
   connectionLimit: 5,
   port: Number(env.OFFBOT_PORT),
 });
+
+const io = new Server();
 
 async function newStatus(status: Status) {
   // Get Price from API
@@ -109,7 +112,10 @@ async function newStatus(status: Status) {
       );
       continue;
     }
-    if (part.verkehrsmittel.nummer !== journeyNumber) {
+    if (
+      part.verkehrsmittel.nummer !== journeyNumber &&
+      part.verkehrsmittel.name !== lineName
+    ) {
       console.log(
         "Train does not match (Part: " +
           part.verkehrsmittel.name +
@@ -177,12 +183,15 @@ async function newStatus(status: Status) {
 
   const conn = await pool.getConnection();
   const query =
-    "INSERT INTO `traewelling_checkin` VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `tw_status_id` = ?";
+    "INSERT INTO `traewelling_checkin` (tw_status_id, tw_user_id, price) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `tw_status_id` = ?";
   await conn.query(query, [status.id, status.user, price, status.id]);
   await conn.release();
+
+  // Send Socket.io Event
+  io.emit("newStatus", status);
 }
 
-async function validate(req: NextRequest) {
+async function validate(req: NextRequest, body: string) {
   // Validate Webhook
   const headers = req.headers;
 
@@ -202,7 +211,6 @@ async function validate(req: NextRequest) {
   }
 
   // Compare Content-Length with actual body length
-  const body = await req.text();
   if (body.length !== contentLengthInt) {
     return new NextResponse("Unauthorized! -- Content-Length invalid", {
       status: 401,
@@ -245,13 +253,17 @@ async function validate(req: NextRequest) {
   }*/
 }
 async function handler(req: NextRequest) {
-  const validation = await validate(req);
+  const body = await req.text();
+
+  const validation = await validate(req, body);
   if (validation) return validation;
 
-  const json = await req.json();
+  const json = JSON.parse(body);
   const event = json.event;
 
   if (event == "checkin_create") await newStatus(json.status as Status);
+  else if (event == "notification" && json.notification.type == "StatusLiked")
+    io.emit("newLike", json.notification);
   else console.log("Event not yet supported: " + event);
 
   return new NextResponse("OK", {
