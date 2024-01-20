@@ -28,6 +28,8 @@ async function newStatus(status: Status) {
   const journeyNumber = status.train.journeyNumber;
   const lineName = status.train.lineName;
 
+  const actualDeparture = dayjs(status.train.origin.departure);
+
   const departure = dayjs(status.train.origin.departurePlanned);
   // departure in UTC + 0, add offset to current timezone
   departure.add(dayjs().utcOffset(), "minute");
@@ -44,7 +46,7 @@ async function newStatus(status: Status) {
 
   const body = {
     abfahrtsHalt: origin,
-    anfrageZeitpunkt: departure.format("YYYY-MM-DDTHH:mm:ss"),
+    anfrageZeitpunkt: actualDeparture.format("YYYY-MM-DDTHH:mm:ss"),
     ankunftSuche: "ABFAHRT",
     ankunftsHalt: destination,
     bikeCarriage: false,
