@@ -127,8 +127,51 @@ async function newStatus(status: Status) {
     console.log("Found matching connection: Train: " + lineName);
     if (connection.angebotsPreis) {
       price = connection.angebotsPreis.betrag;
-      console.log("Price: " + price);
     }
+    if (price == 0) {
+      if (connection.verbundCode && connection.verbundCode == "708") {
+        const ctxRecon = connection.ctxRecon;
+
+        const reconResponse = await fetch(
+          "https://www.bahn.de/web/api/angebote/recon",
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            method: "POST",
+            body: JSON.stringify({
+              ctxRecon: ctxRecon,
+              klasse: "KLASSE_2",
+              reisende: [
+                {
+                  alter: [],
+                  typ: "JUGENDLICHER",
+                  anzahl: 1,
+                  ermaessigungen: [
+                    { art: "KEINE_ERMAESSIGUNG", klasse: "KLASSENLOS" },
+                  ],
+                },
+              ],
+            }),
+          },
+        );
+        const recon = await reconResponse.json();
+        if (
+          recon.verbindungen.length > 0 &&
+          recon.verbindungen[0].reiseAngebote.length > 0
+        ) {
+          for (const offer of recon.verbindungen[0].reiseAngebote) {
+            if (
+              (offer.hinfahrt.fahrtAngebot.name = "Einzelfahrkarte Erwachsene")
+            ) {
+              price = offer.hinfahrt.fahrtAngebot.preis.betrag;
+              break;
+            }
+          }
+        }
+      }
+    }
+    console.log("Price: " + price);
     break;
   }
 
