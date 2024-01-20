@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { type NextApiRequest } from "next";
+import { type NextRequest } from "next/server";
 import { env } from "@/env";
 import { URLSearchParams } from "url";
 import mariadb from "mariadb";
@@ -15,7 +15,7 @@ const pool = mariadb.createPool({
 });
 
 // Example API route
-const GET = async (req: NextApiRequest) => {
+const GET = async (req: NextRequest) => {
   if (req.url === undefined) {
     return new Response("Hello World", {
       status: 500,
