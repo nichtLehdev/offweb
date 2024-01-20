@@ -38,7 +38,7 @@ const GET = async (req: NextApiRequest) => {
   formData.append("code", code);
   formData.append(
     "trwl_webhook_url",
-    "https://cce5-188-95-65-41.ngrok-free.app/api/bot/webhook",
+    env.TRAEWELLING_WEBHOOK_URL + "/api/bot/webhook",
   );
   formData.append(
     "trwl_webhook_events",
@@ -82,10 +82,11 @@ const GET = async (req: NextApiRequest) => {
     access_token,
     refresh_token,
     webhook_secret: json.webhook.secret,
+    webhook_id: json.webhook.id,
   };
 
   const query =
-    "INSERT INTO traewelling_user (`id`, `display_name`, `name`, `valid_until`, `access_token`, `refresh_token`, `webhook_secret`) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `display_name` = ?, `name` = ?, `valid_until` = ?, `access_token` = ?, `refresh_token` = ?, `webhook_secret` = ?";
+    "INSERT INTO traewelling_user (`id`, `display_name`, `name`, `valid_until`, `access_token`, `refresh_token`, `webhook_secret`, `webhook_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `display_name` = ?, `name` = ?, `valid_until` = ?, `access_token` = ?, `refresh_token` = ?, `webhook_secret` = ?, `webhook_id` = ?";
 
   const conn = await pool.getConnection();
   await conn.query(query, [
@@ -96,12 +97,14 @@ const GET = async (req: NextApiRequest) => {
     user.access_token,
     user.refresh_token,
     user.webhook_secret,
+    user.webhook_id,
     user.displayName,
     user.username,
     new Date(Date.now() + (expires_in - 7 * 24 * 60 * 60) * 1000).toISOString(),
     user.access_token,
     user.refresh_token,
     user.webhook_secret,
+    user.webhook_id,
   ]);
   await conn.release();
 

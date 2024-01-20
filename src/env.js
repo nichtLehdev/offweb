@@ -37,6 +37,7 @@ export const env = createEnv({
     TRAEWELLING_CLIENT_ID: z.string(),
     TRAEWELLING_CLIENT_SECRET: z.string(),
     TRAEWELLING_REDIRECT_URI: z.string().url(),
+    TRAEWELLING_WEBHOOK_URL: z.string().url(),
     OFFBOT_URL: z.string(),
     OFFBOT_PORT: z.string().default("3306"),
     OFFBOT_USER: z.string(),
@@ -76,6 +77,7 @@ export const env = createEnv({
     OFFBOT_USER: process.env.OFFBOT_USER,
     OFFBOT_PASSWORD: process.env.OFFBOT_PASSWORD,
     OFFBOT_DATABASE: process.env.OFFBOT_DATABASE,
+    TRAEWELLING_WEBHOOK_URL: process.env.TRAEWELLING_WEBHOOK_URL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

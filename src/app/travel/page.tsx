@@ -8,8 +8,7 @@ export default function BotLoginPage() {
     client_id: env.TRAEWELLING_CLIENT_ID,
     redirect_uri: env.TRAEWELLING_REDIRECT_URI,
     scope: "read-statuses",
-    trwl_webhook_url:
-      "https://cce5-188-95-65-41.ngrok-free.app/api/bot/webhook",
+    trwl_webhook_url: env.TRAEWELLING_WEBHOOK_URL + "/api/bot/webhook",
     trwl_webhook_events:
       "checkin_create,checkin_update,checkin_delete,notification",
   });
