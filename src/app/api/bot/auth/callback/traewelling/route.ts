@@ -86,7 +86,7 @@ const GET = async (req: NextApiRequest) => {
   };
 
   const query =
-    "INSERT INTO traewelling_user (`id`, `display_name`, `name`, `valid_until`, `access_token`, `refresh_token`, `webhook_secret`, `webhook_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `display_name` = ?, `name` = ?, `valid_until` = ?, `access_token` = ?, `refresh_token` = ?, `webhook_secret` = ?, `webhook_id` = ?";
+    "INSERT INTO traewelling_user (`id`, `display_name`, `name`, `valid_until`, `access_token`, `refresh_token`, `webhook_secret`, `webhook_id`, `webhook_url`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `display_name` = ?, `name` = ?, `valid_until` = ?, `access_token` = ?, `refresh_token` = ?, `webhook_secret` = ?, `webhook_id` = ?, `webhook_url` = ?";
 
   const conn = await pool.getConnection();
   await conn.query(query, [
@@ -98,6 +98,7 @@ const GET = async (req: NextApiRequest) => {
     user.refresh_token,
     user.webhook_secret,
     user.webhook_id,
+    env.TRAEWELLING_WEBHOOK_URL + "/api/bot/webhook",
     user.displayName,
     user.username,
     new Date(Date.now() + (expires_in - 7 * 24 * 60 * 60) * 1000).toISOString(),
@@ -105,6 +106,7 @@ const GET = async (req: NextApiRequest) => {
     user.refresh_token,
     user.webhook_secret,
     user.webhook_id,
+    env.TRAEWELLING_WEBHOOK_URL + "/api/bot/webhook",
   ]);
   await conn.release();
 
