@@ -1,6 +1,7 @@
 import { env } from "@/env";
 import mariadb from "mariadb";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { type Status } from "@/types/traewelling";
 import { type NextRequest, NextResponse } from "next/server";
 import { Server } from "socket.io";
@@ -28,16 +29,17 @@ async function newStatus(status: Status) {
   const journeyNumber = status.train.journeyNumber;
   const lineName = status.train.lineName;
 
+  dayjs.extend(utc);
+
   const actualDeparture = dayjs(status.train.origin.departure);
 
   const departure = dayjs(status.train.origin.departurePlanned);
-  departure.locale("de");
   // departure in UTC + 0, add offset to current timezone
-  departure.add(dayjs().utcOffset(), "minute");
+  departure.utc().local();
   const arrival = dayjs(status.train.destination.arrivalPlanned);
   arrival.locale("de");
   // arrival in UTC + 0, add offset to current timezone
-  arrival.add(dayjs().utcOffset(), "minute");
+  arrival.utc().local();
 
   console.log("Origin: " + origin);
   console.log("Destination: " + destination);
