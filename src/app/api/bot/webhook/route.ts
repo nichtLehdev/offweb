@@ -50,15 +50,13 @@ async function verbundCodeToPrice(verbundCode: string, ctxRecon: string) {
     for (const offer of recon.verbindungen[0].reiseAngebote) {
       switch (verbundCode) {
         case "708": // saarVV
-          if (
-            (offer.hinfahrt.fahrtAngebot.name = "Einzelfahrkarte Erwachsene")
-          ) {
-            return Number(offer.hinfahrt.fahrtAngebot.preis.betrag);
+          if ((offer.name = "Einzelfahrkarte Erwachsene")) {
+            return Number(offer.preis.betrag);
           }
           break;
         case "701": // VRN
-          if ((offer.hinfahrt.fahrtAngebot.name = "Einzel-Ticket")) {
-            return Number(offer.hinfahrt.fahrtAngebot.preis.betrag);
+          if ((offer.name = "Einzel-Ticket")) {
+            return Number(offer.betrag);
           }
           break;
       }
