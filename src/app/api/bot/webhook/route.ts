@@ -56,7 +56,7 @@ async function verbundCodeToPrice(verbundCode: string, ctxRecon: string) {
           break;
         case "701": // VRN
           if ((offer.name = "Einzel-Ticket")) {
-            return Number(offer.betrag);
+            return Number(offer.preis.betrag);
           }
           break;
       }
