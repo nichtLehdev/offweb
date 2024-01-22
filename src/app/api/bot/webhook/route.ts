@@ -31,16 +31,15 @@ async function newStatus(status: Status) {
 
   dayjs.extend(utc);
 
-  const actualDeparture = dayjs(status.train.origin.departure);
-  actualDeparture.add(1, "hour");
+  let actualDeparture = dayjs(status.train.origin.departure);
+  actualDeparture = actualDeparture.add(actualDeparture.utcOffset(), "minute");
 
-  const departure = dayjs(status.train.origin.departurePlanned);
+  let departure = dayjs(status.train.origin.departurePlanned);
   // departure in UTC + 0, add offset to current timezone
-  departure.add(1, "hour");
-  const arrival = dayjs(status.train.destination.arrivalPlanned);
-  arrival.locale("de");
+  departure = departure.add(departure.utcOffset(), "minute");
+  let arrival = dayjs(status.train.destination.arrivalPlanned);
   // arrival in UTC + 0, add offset to current timezone
-  arrival.add(1, "hour");
+  arrival = arrival.add(arrival.utcOffset(), "minute");
 
   console.log("Origin: " + origin);
   console.log("Destination: " + destination);
