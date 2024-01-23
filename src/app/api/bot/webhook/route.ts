@@ -15,7 +15,7 @@ const pool = mariadb.createPool({
   port: Number(env.OFFBOT_PORT),
 });
 
-const socket = io("http://localhost:1337");
+const socket = io("https://ws.lehdev.de");
 
 socket.on("connect", () => {
   console.log("Connected to Socket.io Server");
