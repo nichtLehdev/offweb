@@ -17,14 +17,6 @@ const pool = mariadb.createPool({
 
 const socket = io("https://ws.lehdev.de");
 
-socket.on("connect", () => {
-  console.log("Connected to Socket.io Server");
-  socket.emit("init", {
-    client: "webhook",
-    module: "traewelling",
-  });
-});
-
 async function verbundCodeToPrice(verbundCode: string, ctxRecon: string) {
   const reconResponse = await fetch(
     "https://www.bahn.de/web/api/angebote/recon",
@@ -219,7 +211,14 @@ async function newStatus(status: Status) {
   await conn.release();
 
   // Send Socket.io Event
-  socket.emit("newStatus", status);
+  socket.on("connect", () => {
+    console.log("Connected to Socket.io Server");
+    socket.emit("init", {
+      client: "webhook",
+      module: "traewelling",
+    });
+    socket.emit("newStatus", status);
+  });
 }
 
 async function validate(req: NextRequest, body: string) {
