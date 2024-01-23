@@ -48,7 +48,7 @@ export type Status = {
   visibility: number;
   likes: number;
   liked: boolean;
-  isLikaable: boolean;
+  isLikable: boolean;
   createdAt: string;
   train: {
     trip: number;
@@ -67,7 +67,7 @@ export type Status = {
       name: string;
     };
   };
-  event: Event;
+  event: Event | null;
 };
 
 export type Notification = {
