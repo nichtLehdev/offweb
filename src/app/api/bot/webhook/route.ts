@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { type Status } from "@/types/traewelling";
 import { type NextRequest, NextResponse } from "next/server";
-import { Server } from "socket.io";
+import { io } from "socket.io-client";
 
 const pool = mariadb.createPool({
   host: env.OFFBOT_URL,
@@ -15,7 +15,15 @@ const pool = mariadb.createPool({
   port: Number(env.OFFBOT_PORT),
 });
 
-const io = new Server();
+const socket = io("http://localhost:1337");
+
+socket.on("connect", () => {
+  console.log("Connected to Socket.io Server");
+  socket.emit("init", {
+    client: "webhook",
+    module: "traewelling",
+  });
+});
 
 async function newStatus(status: Status) {
   // Get Price from API
@@ -38,7 +46,6 @@ async function newStatus(status: Status) {
   // departure in UTC + 0, add offset to current timezone
   departure.add(1, "hour");
   const arrival = dayjs(status.train.destination.arrivalPlanned);
-  arrival.locale("de");
   // arrival in UTC + 0, add offset to current timezone
   arrival.add(1, "hour");
 
@@ -195,7 +202,7 @@ async function newStatus(status: Status) {
   await conn.release();
 
   // Send Socket.io Event
-  io.emit("newStatus", status);
+  socket.emit("newStatus", status);
 }
 
 async function validate(req: NextRequest, body: string) {
@@ -270,7 +277,7 @@ async function handler(req: NextRequest) {
 
   if (event == "checkin_create") await newStatus(json.status as Status);
   else if (event == "notification" && json.notification.type == "StatusLiked")
-    io.emit("newLike", json.notification);
+    socket.emit("newLike", json.notification);
   else console.log("Event not yet supported: " + event);
 
   return new NextResponse("OK", {
