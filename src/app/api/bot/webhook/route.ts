@@ -225,9 +225,6 @@ async function newStatus(status: Status) {
   socket.disconnect();
   socket.connect();
 
-  while (!socket.connected) {
-    await new Promise((r) => setTimeout(r, 100));
-  }
   socket.emit("newStatus", status);
   console.log("Sent newStatus to Socket.io Server");
 }
