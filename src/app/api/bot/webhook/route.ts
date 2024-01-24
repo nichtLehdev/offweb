@@ -225,10 +225,7 @@ async function newStatus(status: Status) {
   socket.disconnect();
   socket.connect();
   socket.emit("newStatus", status);
-
-  while (!connected) {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-  }
+  console.log("Sent newStatus to Socket.io Server");
 }
 
 async function validate(req: NextRequest, body: string) {
@@ -300,6 +297,8 @@ async function handler(req: NextRequest) {
 
   const json = JSON.parse(body);
   const event = json.event;
+
+  console.log("Body: " + body);
 
   if (event == "checkin_create") await newStatus(json.status as Status);
   else if (event == "notification" && json.notification.type == "StatusLiked")
