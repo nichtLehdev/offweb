@@ -15,7 +15,17 @@ const pool = mariadb.createPool({
   port: Number(env.OFFBOT_PORT),
 });
 
-const socket = io("https://ws.lehdev.de");
+let connected = false;
+const socket = io("ws://lehdev.de:1337");
+// Send Socket.io Event
+socket.on("connect", () => {
+  console.log("Connected to Socket.io Server");
+  socket.emit("init", {
+    client: "webhook",
+    module: "traewelling",
+  });
+  connected = true;
+});
 
 async function verbundCodeToPrice(verbundCode: string, ctxRecon: string) {
   const reconResponse = await fetch(
@@ -210,15 +220,15 @@ async function newStatus(status: Status) {
   await conn.query(query, [status.id, status.user, price, status.id]);
   await conn.release();
 
-  // Send Socket.io Event
-  socket.on("connect", () => {
-    console.log("Connected to Socket.io Server");
-    socket.emit("init", {
-      client: "webhook",
-      module: "traewelling",
-    });
-    socket.emit("newStatus", status);
-  });
+  // Connect to Socket.io Server
+
+  socket.disconnect();
+  socket.connect();
+  socket.emit("newStatus", status);
+
+  while (!connected) {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
 }
 
 async function validate(req: NextRequest, body: string) {
@@ -285,8 +295,8 @@ async function validate(req: NextRequest, body: string) {
 async function handler(req: NextRequest) {
   const body = await req.text();
 
-  const validation = await validate(req, body);
-  if (validation) return validation;
+  //const validation = await validate(req, body);
+  //if (validation) return validation;
 
   const json = JSON.parse(body);
   const event = json.event;
