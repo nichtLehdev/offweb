@@ -232,53 +232,32 @@ async function newStatus(status: Status) {
   await conn.release();
 
   // get all stops of that journey
-  const trip = (await hafasClient.trip!(status.train.hafasId, {
-    stopovers: true,
-  })) as unknown as Trip;
-
-  trip.id = status.train.hafasId;
-
-  const stops = trip.stopovers!;
+  const trip = (
+    await (
+      await fetch(
+        "https://v6.db.transport.rest/trips/" +
+          status.train.hafasId +
+          "?stopovers=true",
+      )
+    ).json()
+  ).trip;
 
   const locationData = [];
-  if (
-    trip.origin?.type === "station" &&
-    trip.origin.location?.type === "location"
-  ) {
-    locationData.push({
-      lat: trip.origin.location.latitude,
-      lng: trip.origin.location.longitude,
-    });
-  } else if (trip.origin?.type === "location") {
-    locationData.push({
-      lat: trip.origin.latitude,
-      lng: trip.origin.longitude,
-    });
-  }
-  for (const stop of stops) {
-    if (
-      stop.stop?.type === "station" &&
-      stop.stop.location?.type === "location"
-    )
+  let isAfterDeparture = false;
+  let isBeforeArrival = true;
+
+  for (const stop of trip.stopovers) {
+    if (stop.stop.id == status.train.origin.evaIdentifier.toString())
+      isAfterDeparture = true;
+    if (stop.stop.id == status.train.destination.evaIdentifier.toString())
+      isBeforeArrival = false;
+
+    if (isAfterDeparture && isBeforeArrival) {
       locationData.push({
         lat: stop.stop.location.latitude,
         lng: stop.stop.location.longitude,
       });
-  }
-
-  if (
-    trip.destination?.type === "station" &&
-    trip.destination.location?.type === "location"
-  ) {
-    locationData.push({
-      lat: trip.destination.location.latitude,
-      lng: trip.destination.location.longitude,
-    });
-  } else if (trip.destination?.type === "location") {
-    locationData.push({
-      lat: trip.destination.latitude,
-      lng: trip.destination.longitude,
-    });
+    }
   }
 
   // Create brouter query-string
@@ -289,14 +268,21 @@ async function newStatus(status: Status) {
 
   // Remove last "|"
   brouterQuery = brouterQuery.slice(0, -1);
-
   // Get Route from BRouter
   const brouterResponse = await fetch(
     "https://brouter.de/brouter?profile=rail&alternativeidx=0&format=geojson&lonlats=" +
       brouterQuery,
   );
-
   const brouterData = await brouterResponse.json();
+
+  if (brouterData.features.length == 0) {
+    console.log("No route found!");
+    return;
+  }
+
+  console.log("Route found!");
+
+  const geo = brouterData.features[0].geometry.coordinates;
 
   // Connect to Socket.io Server
   socket.disconnect();
@@ -305,7 +291,7 @@ async function newStatus(status: Status) {
   socket.emit("newStatus", {
     status: status,
     price: price,
-    route: brouterData,
+    route: geo,
   });
   console.log("Sent newStatus to Socket.io Server");
 }
