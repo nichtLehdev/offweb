@@ -225,7 +225,10 @@ async function newStatus(status: Status) {
   socket.disconnect();
   socket.connect();
 
-  socket.emit("newStatus", status);
+  socket.emit("newStatus", {
+    status: status,
+    price: price,
+  });
   console.log("Sent newStatus to Socket.io Server");
 }
 
