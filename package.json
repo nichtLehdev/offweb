@@ -34,6 +34,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "dayjs": "^1.11.10",
+    "hafas-client": "^6.2.1",
     "lucide-react": "^0.302.0",
     "mariadb": "^3.2.3",
     "next": "^14.0.4",
@@ -54,6 +55,7 @@
   "devDependencies": {
     "@next/eslint-plugin-next": "^14.0.4",
     "@types/eslint": "^8.56.0",
+    "@types/hafas-client": "^6.1.6",
     "@types/node": "^18.19.3",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
