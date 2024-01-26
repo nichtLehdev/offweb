@@ -293,8 +293,8 @@ async function validate(req: NextRequest, body: string) {
 async function handler(req: NextRequest) {
   const body = await req.text();
 
-  //const validation = await validate(req, body);
-  //if (validation) return validation;
+  const validation = await validate(req, body);
+  if (validation) return validation;
 
   const json = JSON.parse(body);
   const event = json.event;
