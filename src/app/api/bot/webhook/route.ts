@@ -249,8 +249,6 @@ async function newStatus(status: Status) {
   for (const stop of trip.stopovers) {
     if (stop.stop.id == status.train.origin.evaIdentifier.toString())
       isAfterDeparture = true;
-    if (stop.stop.id == status.train.destination.evaIdentifier.toString())
-      isBeforeArrival = false;
 
     if (isAfterDeparture && isBeforeArrival) {
       locationData.push({
@@ -258,6 +256,9 @@ async function newStatus(status: Status) {
         lng: stop.stop.location.longitude,
       });
     }
+
+    if (stop.stop.id == status.train.destination.evaIdentifier.toString())
+      isBeforeArrival = false;
   }
 
   // Create brouter query-string
