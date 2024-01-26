@@ -60,6 +60,9 @@ async function verbundCodeToPrice(verbundCode: string, ctxRecon: string) {
     for (const offer of recon.verbindungen[0].reiseAngebote) {
       switch (verbundCode) {
         case "996": // MVV
+          if (offer.name == "Einzelfahrkarte Kurzstrecke") {
+            return Number(offer.preis.betrag);
+          }
         case "703": // KVV
         case "708": // saarVV
           if (offer.name == "Einzelfahrkarte Erwachsene") {
