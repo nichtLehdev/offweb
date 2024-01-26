@@ -15,7 +15,6 @@ const pool = mariadb.createPool({
   port: Number(env.OFFBOT_PORT),
 });
 
-let connected = false;
 const socket = io("ws://lehdev.de:1337");
 // Send Socket.io Event
 socket.on("connect", () => {
@@ -24,7 +23,6 @@ socket.on("connect", () => {
     client: "webhook",
     module: "traewelling",
   });
-  connected = true;
 });
 
 async function verbundCodeToPrice(verbundCode: string, ctxRecon: string) {
